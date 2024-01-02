@@ -1,6 +1,16 @@
 import pandas as pd
 import numpy as np
 
+from pyproj import Proj, transform
+
+def latlon_to_utm_zone_28N(latitude, longitude):
+    # UTM zone 28N for the given area
+    utm_proj = Proj('+proj=utm +zone=28 +north +ellps=WGS84')
+    wgs84_proj = Proj(proj='latlong', datum='WGS84')
+
+    utm_x, utm_y = transform(wgs84_proj, utm_proj, longitude, latitude)
+    return utm_x, utm_y
+
 # Function to calculate Euclidean distance (vectorized for performance)
 def euclidean_distance(x1, y1, x2, y2):
     return np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
@@ -13,10 +23,11 @@ def process_chunk(chunk, point_x, point_y):
     return chunk
 
 # convertit le fichier xlsx en csv d'abord, le format sera beaucoup plus clean
-# df = pd.read_xlsx('Base localites_senegal_2023(1).xlsx')
+# df = pd.read_excel('Base localites_senegal_2023(1).xlsx')
 # df.to_csv("Base localites_senegal_2023(1).csv")
 
 file_path = 'Base localites_senegal_2023(1).csv'
+
 # point_x = 241579.092567
 # point_y = 1622974.33196
 
@@ -41,3 +52,7 @@ closest_points = closest_points.nsmallest(5, 'distance')
 print(closest_points)
 
 closest_points.to_csv("voisinage.csv")
+
+
+
+
